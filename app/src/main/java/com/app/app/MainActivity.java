@@ -1,14 +1,17 @@
 package com.app.app;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.app.app.api.UserAPI;
 import com.app.app.api.impl.UserApiImpl;
@@ -38,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= 30) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent getPermission = new Intent();
+                getPermission.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivity(getPermission);
+            }
+        }
 
         if (SharedPrefManager.getInstance(MainActivity.this).isLoggedIn()) {
             startActivity(new Intent(MainActivity.this, HomeActivity.class));

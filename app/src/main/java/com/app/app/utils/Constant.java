@@ -7,4 +7,5 @@ public final class Constant {
 
     public static final String IS_ADD = "isAdd";
     public static final String CATE = "cate";
+    public static final String PRODUCT = "product";
 }

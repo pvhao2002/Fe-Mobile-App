@@ -3,12 +3,9 @@ package com.app.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.app.app.adapter.CategoryAdapter;
 import com.app.app.api.CategoryAPI;
 import com.app.app.api.impl.CategoryApiImpl;
+import com.app.app.callback.CategoryCallBack;
 import com.app.app.model.Category;
 import com.app.app.utils.Constant;
 
@@ -34,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity implements CategoryCallBack {
     TextView btnBack, btnAdd;
     RecyclerView recyclerViewCategory;
     CategoryAdapter categoryAdapter;
@@ -48,11 +46,12 @@ public class CategoryActivity extends AppCompatActivity {
         recyclerViewCategory = findViewById(R.id.recycleViewCategory);
         btnBack = findViewById(R.id.textViewBackProductInfo);
         btnAdd = findViewById(R.id.textViewAddProduct);
+        categories = new ArrayList<>();
         initData();
         btnBack.setOnClickListener(v -> finish());
         GridLayoutManager gridLayoutManager = new GridLayoutManager(CategoryActivity.this, 3, GridLayoutManager.VERTICAL, false);
         recyclerViewCategory.setLayoutManager(gridLayoutManager);
-        categoryAdapter = new CategoryAdapter(categories, CategoryActivity.this);
+        categoryAdapter = new CategoryAdapter(categories, this, CategoryActivity.this);
         recyclerViewCategory.setAdapter(categoryAdapter);
         btnAdd.setOnClickListener(e -> {
             Intent intent = new Intent(getApplicationContext(), CategoryInfoActivity.class);
@@ -61,7 +60,7 @@ public class CategoryActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putSerializable(Constant.CATE, cate);
             intent.putExtras(bundle);
-            someActivityResultLauncher.launch(intent);
+            directToCategoryInfo(intent);
         });
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeRefreshLayout);
         pullToRefresh.setOnRefreshListener(() -> {
@@ -77,11 +76,9 @@ public class CategoryActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     // There are no request codes
-                    synchronized (this) {
-                        initData();
-                    }
-                    categoryAdapter = new CategoryAdapter(categories, CategoryActivity.this);
-                    recyclerViewCategory.setAdapter(categoryAdapter);
+                    categories.clear();
+                    initData();
+                    categoryAdapter.notifyDataSetChanged();
                 }
             });
 
@@ -112,5 +109,10 @@ public class CategoryActivity extends AppCompatActivity {
                 Toast.makeText(CategoryActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void directToCategoryInfo(Intent intent) {
+        someActivityResultLauncher.launch(intent);
     }
 }

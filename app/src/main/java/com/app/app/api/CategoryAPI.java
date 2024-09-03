@@ -5,8 +5,10 @@ import java.util.HashMap;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface CategoryAPI {
     @GET("all")
@@ -14,4 +16,7 @@ public interface CategoryAPI {
 
     @POST("upsert")
     Call<ResponseBody> upsert(@Body HashMap<String, Object> category);
+
+    @DELETE("delete")
+    Call<ResponseBody> delete(@Query("id") int id);
 }

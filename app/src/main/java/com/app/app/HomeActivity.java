@@ -59,7 +59,7 @@ public class HomeActivity extends AppCompatActivity {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(), 3, GridLayoutManager.VERTICAL, false);
         recyclerViewCategory.setLayoutManager(gridLayoutManager);
-        categoryAdapter = new HomeAdapter(categories, getApplicationContext());
+        categoryAdapter = new HomeAdapter(categories, HomeActivity.this);
         recyclerViewCategory.setAdapter(categoryAdapter);
 
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.swipeRefreshLayout);

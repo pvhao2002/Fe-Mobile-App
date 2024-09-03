@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProductActivity">
+    tools:context=".ShopActivity">
     <LinearLayout
-        android:id="@+id/linearLayoutProduct"
+        android:id="@+id/linearLayoutShop"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="50dp"
         android:layout_marginTop="1dp"
         android:background="@drawable/bg_orange"
         android:orientation="horizontal"
@@ -18,28 +18,21 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewBackProductInfo"
+            android:id="@+id/textViewBackShop"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.5"
+            android:layout_weight="1.2"
             android:background="@drawable/ic_back" />
 
         <TextView
             android:id="@+id/textViewProductTitle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="7"
+            android:layout_weight="8.5"
             android:gravity="center"
-            android:text="Quản lý sản phẩm"
+            android:text="Cửa hàng"
             android:textColor="@color/black"
             android:textSize="26sp" />
-
-        <TextView
-            android:id="@+id/textViewAddProduct"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.5"
-            android:background="@drawable/ic_add" />
     </LinearLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -51,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutProduct">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutShop">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -59,10 +52,9 @@
             android:fillViewport="true">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycleViewProduct"
+                android:id="@+id/recycleViewProductByCate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

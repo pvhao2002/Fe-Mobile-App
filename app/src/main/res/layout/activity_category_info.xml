@@ -6,6 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".CategoryInfoActivity">
 
+    <TextView
+        android:id="@+id/btnDel"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/orange_border"
+        android:gravity="center"
+        android:text="Xóa"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnUpsert" />
+
     <LinearLayout
         android:id="@+id/linearLayoutCateInfo"
         android:layout_width="0dp"
@@ -67,7 +84,7 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="92dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/orange_button"
         android:gravity="center"
@@ -75,6 +92,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextCateName" />
 

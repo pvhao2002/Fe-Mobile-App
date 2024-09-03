@@ -7,13 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.app.CategoryInfoActivity;
 import com.app.app.R;
+import com.app.app.callback.CategoryCallBack;
 import com.app.app.model.Category;
 import com.app.app.utils.Constant;
 
@@ -21,11 +21,13 @@ import java.util.ArrayList;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
     ArrayList<Category> listCategory;
+    CategoryCallBack categoryCallBack;
     Context context;
 
-    public CategoryAdapter(ArrayList<Category> listCategory, Context context) {
+    public CategoryAdapter(ArrayList<Category> listCategory, CategoryCallBack context, Context context1) {
         this.listCategory = listCategory;
-        this.context = context;
+        this.categoryCallBack = context;
+        this.context = context1;
     }
 
 
@@ -46,7 +48,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             bundle.putSerializable(Constant.CATE, category);
             intent.putExtras(bundle);
             intent.putExtra(Constant.IS_ADD, false);
-            context.startActivity(intent);
+            categoryCallBack.directToCategoryInfo(intent);
         });
     }
 

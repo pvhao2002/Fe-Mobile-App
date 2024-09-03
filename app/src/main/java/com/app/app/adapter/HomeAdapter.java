@@ -1,6 +1,7 @@
 package com.app.app.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.app.R;
+import com.app.app.ShopActivity;
 import com.app.app.model.Category;
+import com.app.app.utils.Constant;
 
 import java.util.ArrayList;
 
@@ -37,12 +40,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         Category category = listCategory.get(position);
         holder.cateName.setText(category.getName());
         holder.itemView.setOnClickListener(v -> {
-//            Intent intent = new Intent(context, CategoryInfoActivity.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putSerializable("cate", category);
-//            intent.putExtras(bundle);
-//            context.startActivity(intent);
-            Toast.makeText(context, "Click on " + category.getName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, ShopActivity.class);
+            intent.putExtra(Constant.CATE, category.getCategoryId());
+            context.startActivity(intent);
         });
     }
 

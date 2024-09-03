@@ -1,7 +1,8 @@
 package com.app.app;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CategoryInfoActivity extends AppCompatActivity {
-    TextView textViewBackCateInfo, btnUpsert;
+    TextView textViewBackCateInfo, btnUpsert, btnDel;
     Category category;
     EditText editTextCateName;
     CategoryAPI categoryAPI = CategoryApiImpl.getInstance();
@@ -39,6 +40,7 @@ public class CategoryInfoActivity extends AppCompatActivity {
         textViewBackCateInfo = findViewById(R.id.textViewBackProductInfo);
         btnUpsert = findViewById(R.id.btnUpsert);
         editTextCateName = findViewById(R.id.editTextCateName);
+        btnDel = findViewById(R.id.btnDel);
 
         textViewBackCateInfo.setOnClickListener(v -> finish());
         category = (Category) getIntent().getSerializableExtra(Constant.CATE);
@@ -47,6 +49,8 @@ public class CategoryInfoActivity extends AppCompatActivity {
         btnUpsert.setText(isAdd ? "Thêm" : "Cập nhật");
         if (!isAdd) {
             editTextCateName.setText(category.getName());
+        } else {
+            btnDel.setVisibility(TextView.GONE);
         }
 
         btnUpsert.setOnClickListener(e -> {
@@ -64,18 +68,7 @@ public class CategoryInfoActivity extends AppCompatActivity {
             categoryAPI.upsert(map).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    try {
-                        String res = response.body().string();
-                        JSONObject json = new JSONObject(res);
-                        if (json.getBoolean("success")) {
-                            Toast.makeText(getApplicationContext(), "Thành công", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Thất bại", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (JSONException | IOException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    handleSuccess(response);
                 }
 
                 @Override
@@ -84,5 +77,36 @@ public class CategoryInfoActivity extends AppCompatActivity {
                 }
             });
         });
+
+        btnDel.setOnClickListener(e -> {
+            categoryAPI.delete(category.getCategoryId()).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    handleSuccess(response);
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private void handleSuccess(Response<ResponseBody> response) {
+        try {
+            String res = response.body().string();
+            JSONObject json = new JSONObject(res);
+            if (json.getBoolean("success")) {
+                Toast.makeText(getApplicationContext(), "Thành công", Toast.LENGTH_SHORT).show();
+                Intent returnIntent = new Intent();
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), "Thất bại", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException | IOException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 }
