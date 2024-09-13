@@ -32,7 +32,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
     Button btnLogin;
     EditText etUsername, etPassword;
-    TextView textViewResetPassword;
+    TextView textViewResetPassword, txtSignup;
 
     UserAPI api = UserApiImpl.getInstance();
     private final String LOGIN_FAIL = "Đăng nhập thất bại";
@@ -59,9 +59,15 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         etUsername = findViewById(R.id.editTextUsername);
         etPassword = findViewById(R.id.editTextPassword);
+        txtSignup = findViewById(R.id.txtSignup);
         textViewResetPassword = findViewById(R.id.txtForgotPassword);
 
         textViewResetPassword.setOnClickListener(v -> Toast.makeText(this, "Chức năng đang được phát triển", Toast.LENGTH_SHORT).show());
+
+        txtSignup.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
 
         btnLogin.setOnClickListener(e -> {
             String username = etUsername.getText().toString();
@@ -96,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(new Intent(MainActivity.this, HomeActivity.class));
                                 finish();
                             } else {
-                                Toast.makeText(MainActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, jsonObject.getString("data"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (IOException | JSONException ex) {
                             Toast.makeText(MainActivity.this, LOGIN_FAIL, Toast.LENGTH_SHORT).show();

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="32dp"
     tools:context=".HomeActivity">
 
 
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:text="Hi, "
+        android:text="Xin chào, "
         android:textColor="@color/orange"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -72,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="32dp"
-            android:text="Giao hàng\nmiễn phí"
+            android:text="Sản phẩm\nchất lượng"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -83,7 +84,7 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="T2 - CN"
+            android:text="Sale up 50%"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/textView"
             app:layout_constraintStart_toStartOf="@+id/textView"
@@ -101,15 +102,40 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyleBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </ScrollView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4">
@@ -122,61 +148,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewTable"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="true" />
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
-        android:weightSum="4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-        <Button
-            android:id="@+id/btnCategory"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="5dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/orange"
-            android:text="Quản lý thể loại"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnProduct"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/orange"
-            android:layout_weight="1"
-            android:text="Quản lý sản phẩm"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnOrder"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/orange"
-            android:layout_weight="1"
-            android:text="Quản lý hóa đơn"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnStatistic"
-            android:layout_width="0dp"
-            android:backgroundTint="@color/orange"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Thống kê"
-            android:textSize="12sp" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

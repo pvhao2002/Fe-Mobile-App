@@ -1,6 +1,7 @@
 package com.app.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -78,19 +79,7 @@ public class CategoryInfoActivity extends AppCompatActivity {
             });
         });
 
-        btnDel.setOnClickListener(e -> {
-            categoryAPI.delete(category.getCategoryId()).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    handleSuccess(response);
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+        btnDel.setOnClickListener(e -> showConfirmationDialog());
     }
 
     private void handleSuccess(Response<ResponseBody> response) {
@@ -108,5 +97,26 @@ public class CategoryInfoActivity extends AppCompatActivity {
         } catch (JSONException | IOException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("Xóa")
+                .setMessage("Bạn có muốn xóa danh mục này không?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    categoryAPI.delete(category.getCategoryId()).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            handleSuccess(response);
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }

@@ -1,5 +1,7 @@
 package com.app.app;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,9 +30,8 @@ import com.app.app.api.impl.CategoryApiImpl;
 import com.app.app.api.impl.ProductApiImpl;
 import com.app.app.model.Category;
 import com.app.app.model.Product;
-import com.app.app.payload.ProductRequest;
+import com.app.app.model.ProductImage;
 import com.app.app.utils.Constant;
-import com.app.app.utils.ImageFilePath;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -56,8 +59,10 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     TextView btnChooseImage, btnAdd, btnDel, btnBack;
     EditText editTextName, editTextPrice, editTextDiscount;
     private List<Uri> imageUris;
+    ArrayList<String> stringArrayList;
     Product product;
     boolean isAdd;
+    boolean isUri;
     RecyclerView recyclerView;
     ProductImageAdapter productImageAdapter;
     ProductAPI productAPI = ProductApiImpl.getInstance();
@@ -65,10 +70,17 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     ArrayList<Category> listCategory;
     Spinner spinnerCategory;
     Category selectedCategory;
+    ProgressBar progressBarProduct;
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == RESULT_OK) {
             Intent data = result.getData();
             if (data != null) {
+                if (imageUris != null) {
+                    imageUris.clear();
+                }
+                if (stringArrayList != null) {
+                    stringArrayList.clear();
+                }
                 if (data.getClipData() != null) {
                     // Đọc nhiều hình ảnh
                     int count = data.getClipData().getItemCount();
@@ -81,6 +93,7 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
                     Uri selectedImageUri = data.getData();
                     imageUris.add(selectedImageUri);
                 }
+                productImageAdapter.setUriArrayList(true, (ArrayList<Uri>) imageUris);
                 productImageAdapter.notifyDataSetChanged();
             }
         }
@@ -90,7 +103,7 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_info);
-
+        isUri = true;
         imageUris = new ArrayList<>();
         listCategory = new ArrayList<>();
 
@@ -104,11 +117,23 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
         recyclerView = findViewById(R.id.recycleProductImage);
         spinnerCategory = findViewById(R.id.spinnerCategoryProduct);
         product = (Product) getIntent().getSerializableExtra(Constant.PRODUCT);
-        isAdd = getIntent().getBooleanExtra(Constant.IS_ADD, false);
+        progressBarProduct = findViewById(R.id.progressBarProduct);
+        isAdd = getIntent().getBooleanExtra(Constant.IS_ADD, true);
+
+        if (!isAdd) {
+            editTextName.setText(product.getName());
+            editTextPrice.setText(product.getPrice().toString());
+            editTextDiscount.setText(String.valueOf(product.getDiscount()));
+            stringArrayList = (ArrayList<String>) product.getImages().stream().map(ProductImage::getUrl).collect(Collectors.toList());
+            isUri = false;
+            btnAdd.setText("Cập nhật");
+        } else {
+            btnDel.setVisibility(View.GONE);
+        }
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(ProductInfoActivity.this, 3, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(gridLayoutManager);
-        productImageAdapter = new ProductImageAdapter((ArrayList<Uri>) imageUris);
+        productImageAdapter = new ProductImageAdapter((ArrayList<Uri>) imageUris, stringArrayList, isUri);
         recyclerView.setAdapter(productImageAdapter);
         initDataCate();
 
@@ -143,11 +168,7 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
             }
             upsertProductFunction();
         });
-
-        btnDel.setOnClickListener(v -> {
-            // Delete product
-            editTextName.setText(String.valueOf(imageUris.size()));
-        });
+        btnDel.setOnClickListener(v -> showConfirmationDialog());
 
         btnBack.setOnClickListener(v -> {
             Log.e("Test", "Back");
@@ -156,10 +177,12 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
     private void initDataCate() {
+        progressBarProduct.setVisibility(ProgressBar.VISIBLE);
         categoryAPI.getAll().enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
+                    progressBarProduct.setVisibility(ProgressBar.GONE);
                     JSONObject obj = new JSONObject(response.body().string());
                     if (obj.getBoolean("success")) {
                         JSONArray dataArray = obj.getJSONArray("data");
@@ -195,7 +218,6 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
     private void upsertProductFunction() {
-        ProductRequest request = new ProductRequest();
         List<MultipartBody.Part> imageParts = new ArrayList<>();
         for (Uri uri : imageUris) {
             String filePath = getRealPathFromURI(uri);
@@ -218,11 +240,13 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
             RequestBody id = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(product.getProductId()));
             params.put("id", id);
         }
+        progressBarProduct.setVisibility(ProgressBar.VISIBLE);
 
         productAPI.upsertProduct(params, imageParts).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
+                    progressBarProduct.setVisibility(ProgressBar.GONE);
                     JSONObject obj = new JSONObject(response.body().string());
                     if (obj.getBoolean("success")) {
                         Toast.makeText(ProductInfoActivity.this, obj.getString("message"), Toast.LENGTH_SHORT).show();
@@ -230,6 +254,9 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
                     } else {
                         Toast.makeText(ProductInfoActivity.this, obj.getString("message"), Toast.LENGTH_SHORT).show();
                     }
+                    Intent returnIntent = new Intent();
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    finish();
                 } catch (JSONException | IOException e) {
                     Toast.makeText(ProductInfoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("errere", e.getMessage());
@@ -255,7 +282,7 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
     private String getRealPathFromURI(Uri uri) {
-        String[] projection = { MediaStore.Images.Media.DATA };
+        String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
         if (cursor != null) {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -265,5 +292,40 @@ public class ProductInfoActivity extends AppCompatActivity implements AdapterVie
             return path;
         }
         return StringUtils.EMPTY;
+    }
+
+    private void showConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("Xóa")
+                .setMessage("Bạn có muốn xóa sản phẩm này không?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    if (product != null) {
+                        productAPI.deleteProduct(product.getProductId()).enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                try {
+                                    JSONObject obj = new JSONObject(response.body().string());
+                                    if (obj.getBoolean("success")) {
+                                        Toast.makeText(ProductInfoActivity.this, obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    } else {
+                                        Toast.makeText(ProductInfoActivity.this, obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException | IOException e) {
+                                    Toast.makeText(ProductInfoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Log.e("errere", e.getMessage());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(ProductInfoActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                Log.e("errere", t.getMessage());
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }

@@ -13,6 +13,8 @@ public final class SharedPrefManager {
     private static final String KEY_NAME = "key-name";
     private static final String KEY_EMAIL = "key-email";
     private static final String KEY_PASSWORD = "key-password";
+    private static final String KEY_ROLE = "key-role";
+
     private static SharedPrefManager mInstance;
     private static Context ctx;
 
@@ -30,10 +32,11 @@ public final class SharedPrefManager {
     public void userLogin(User user) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_ID, user.getUserId() + "");
+        editor.putInt(KEY_ID, user.getUserId());
         editor.putString(KEY_NAME, user.getFullName());
         editor.putString(KEY_EMAIL, user.getUsername());
         editor.putString(KEY_PASSWORD, user.getPassword());
+        editor.putString(KEY_ROLE, user.getRole());
         editor.apply();
     }
 
@@ -49,6 +52,7 @@ public final class SharedPrefManager {
         u.setFullName(sharedPreferences.getString(KEY_NAME, StringUtils.EMPTY));
         u.setUsername(sharedPreferences.getString(KEY_EMAIL, StringUtils.EMPTY));
         u.setPassword(sharedPreferences.getString(KEY_PASSWORD, StringUtils.EMPTY));
+        u.setRole(sharedPreferences.getString(KEY_ROLE, StringUtils.EMPTY));
         return u;
     }
 

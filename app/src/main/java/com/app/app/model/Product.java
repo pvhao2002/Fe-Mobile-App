@@ -1,5 +1,6 @@
 package com.app.app.model;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.Serializable;
@@ -22,13 +23,26 @@ public class Product implements Serializable {
 
     public Product(JSONObject json) {
         this(
+                json,
+                new ArrayList<>()
+        );
+        JSONArray imagesArr = json.optJSONArray("images");
+        if (imagesArr != null) {
+            for (int i = 0; i < imagesArr.length(); i++) {
+                this.images.add(new ProductImage(imagesArr.optJSONObject(i)));
+            }
+        }
+    }
+
+    public Product(JSONObject json, List<ProductImage> images) {
+        this(
                 json.optInt("productId", 0),
                 json.optString("name", ""),
-                new BigDecimal(json.optString("price", "0")),
-                new BigDecimal(json.optString("netPrice", "0")),
-                new BigDecimal(json.optString("discount", "0")),
+                new BigDecimal(json.optDouble("price", Double.valueOf(0))),
+                new BigDecimal(json.optDouble("netPrice", Double.valueOf(0))),
+                new BigDecimal(json.optDouble("discount", Double.valueOf(0))),
                 json.optString("thumbnail", ""),
-                new ArrayList<>()
+                images
         );
     }
 
@@ -96,5 +110,18 @@ public class Product implements Serializable {
 
     public void setImages(List<ProductImage> images) {
         this.images = images;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productId=" + productId +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", netPrice=" + netPrice +
+                ", discount=" + discount +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", images=" + images +
+                '}';
     }
 }

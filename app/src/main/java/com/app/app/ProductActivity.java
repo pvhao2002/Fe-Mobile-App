@@ -19,6 +19,7 @@ import com.app.app.api.ProductAPI;
 import com.app.app.api.impl.ProductApiImpl;
 import com.app.app.callback.ProductCallback;
 import com.app.app.model.Product;
+import com.app.app.model.ProductImage;
 import com.app.app.utils.Constant;
 
 import org.json.JSONArray;
@@ -49,7 +50,7 @@ public class ProductActivity extends AppCompatActivity implements ProductCallbac
         recyclerViewProduct = findViewById(R.id.recycleViewProduct);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(ProductActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recyclerViewProduct.setLayoutManager(gridLayoutManager);
-        productAdapter = new ProductAdapter(products);
+        productAdapter = new ProductAdapter(products, ProductActivity.this, this);
         recyclerViewProduct.setAdapter(productAdapter);
         getListProduct();
         textViewBackProductInfo.setOnClickListener(v -> finish());
@@ -62,7 +63,6 @@ public class ProductActivity extends AppCompatActivity implements ProductCallbac
         pullToRefresh.setOnRefreshListener(() -> {
             products.clear();
             getListProduct();
-            productAdapter.notifyDataSetChanged();
             pullToRefresh.setRefreshing(false);
         });
     }
@@ -77,7 +77,14 @@ public class ProductActivity extends AppCompatActivity implements ProductCallbac
                         JSONArray dataArray = obj.getJSONArray("data");
                         for (int i = 0; i < dataArray.length(); i++) {
                             JSONObject jsonObj = dataArray.getJSONObject(i);
-                            Product product = new Product(jsonObj);
+                            JSONArray imagesObj = jsonObj.getJSONArray("images");
+                            ArrayList<ProductImage> images = new ArrayList<>();
+                            for (int j = 0; j < imagesObj.length(); j++) {
+                                JSONObject imageObj = imagesObj.getJSONObject(j);
+                                ProductImage image = new ProductImage(imageObj);
+                                images.add(image);
+                            }
+                            Product product = new Product(jsonObj, images);
                             products.add(product);
                         }
                         productAdapter.notifyDataSetChanged();
@@ -106,7 +113,6 @@ public class ProductActivity extends AppCompatActivity implements ProductCallbac
                     // There are no request codes
                     products.clear();
                     getListProduct();
-                    productAdapter.notifyDataSetChanged();
                 }
             });
 

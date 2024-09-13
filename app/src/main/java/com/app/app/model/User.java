@@ -8,6 +8,7 @@ public class User {
     String username;
     String password;
     String fullName;
+    String role;
     public int getUserId() {
         return userId;
     }
@@ -40,8 +41,16 @@ public class User {
         this.fullName = fullName;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public User() {
-      this(0, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
+      this(0, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
     }
 
     public User(JSONObject jsonObject) throws JSONException {
@@ -49,14 +58,16 @@ public class User {
                 jsonObject.getInt("userId"),
                 jsonObject.getString("username"),
                 jsonObject.getString("password"),
-                jsonObject.getString("fullName")
+                jsonObject.getString("fullName"),
+                jsonObject.getString("role")
         );
     }
 
-    public User(int userId, String username, String password, String fullName) {
+    public User(int userId, String username, String password, String fullName, String role) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
+        this.role = role;
     }
 }

@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class BaseAPI {
-    protected static final String BASE_HREF = "http://192.168.1.7:8080/api/";
+    protected static final String BASE_HREF = "http://192.168.2.123:8080/api/";
     private static HttpLoggingInterceptor sLogging = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
     private static OkHttpClient.Builder sHttpClient = new OkHttpClient.Builder();
 

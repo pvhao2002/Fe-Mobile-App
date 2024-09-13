@@ -7,6 +7,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -21,10 +22,16 @@ public interface ProductAPI {
     @GET("by-category")
     Call<ResponseBody> getByCategory(@Query("cid") int category);
 
+    @GET("all-img-by-product")
+    Call<ResponseBody> getAllImageByProduct(@Query("pid") int productId);
+
     @Multipart
     @POST("upsert")
     Call<ResponseBody> upsertProduct(
             @PartMap Map<String, RequestBody> params,
             @Part List<MultipartBody.Part> images
     );
+
+    @DELETE("delete")
+    Call<ResponseBody> deleteProduct(@Query("id") int productId);
 }

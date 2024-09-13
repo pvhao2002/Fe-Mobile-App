@@ -66,7 +66,6 @@ public class CategoryActivity extends AppCompatActivity implements CategoryCallB
         pullToRefresh.setOnRefreshListener(() -> {
             categories.clear();
             initData();
-            categoryAdapter.notifyDataSetChanged();
             pullToRefresh.setRefreshing(false);
         });
     }

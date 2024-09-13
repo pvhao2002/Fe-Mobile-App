@@ -1,5 +1,7 @@
 package com.app.app.model;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 public class ProductImage implements Serializable {
@@ -8,6 +10,10 @@ public class ProductImage implements Serializable {
 
     public ProductImage() {
         this(null, null);
+    }
+
+    public ProductImage(JSONObject json) {
+        this(json.optInt("productImageId", 0), json.optString("url", ""));
     }
 
     public ProductImage(Integer productImageId, String url) {
@@ -29,5 +35,10 @@ public class ProductImage implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductImage{" + "productImageId=" + productImageId + ", url='" + url + '\'' + '}';
     }
 }

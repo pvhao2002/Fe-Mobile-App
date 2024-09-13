@@ -10,14 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.app.R;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
 public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapter.ProductImageViewHolder> {
     private ArrayList<Uri> uriArrayList;
+    private ArrayList<String> stringArrayList;
+    private boolean isUri;
 
-    public ProductImageAdapter(ArrayList<Uri> uriArrayList) {
+    public ProductImageAdapter(ArrayList<Uri> uriArrayList, ArrayList<String> stringArrayList, boolean isUri) {
         this.uriArrayList = uriArrayList;
+        this.stringArrayList = stringArrayList;
+        this.isUri = isUri;
     }
 
     @NonNull
@@ -29,12 +34,21 @@ public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ProductImageAdapter.ProductImageViewHolder holder, int position) {
-        holder.imageView.setImageURI(uriArrayList.get(position));
+        if (isUri)
+            holder.imageView.setImageURI(uriArrayList.get(position));
+        else
+            Glide.with(holder.itemView.getContext()).load(stringArrayList.get(position)).into(holder.imageView);
     }
 
     @Override
     public int getItemCount() {
-        return uriArrayList.size();
+        return isUri ? uriArrayList.size() : stringArrayList.size();
+    }
+
+    public void setUriArrayList(boolean isUri, ArrayList<Uri> uriArrayList) {
+        this.uriArrayList = uriArrayList;
+        this.isUri = isUri;
+        notifyDataSetChanged();
     }
 
     public class ProductImageViewHolder extends RecyclerView.ViewHolder {
